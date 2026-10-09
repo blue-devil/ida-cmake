@@ -33,6 +33,7 @@ set(IDA_BINARY_64   ON   CACHE BOOL "Build a 64 bit binary (IDA >= 7.0)"       )
 set(IDA_EA_64       ON   CACHE BOOL "Build for 64 bit IDA (ida64, sizeof(ea_t) == 8)")
 set(IDA_SDK         ""   CACHE PATH "Path to IDA SDK"                          )
 set(IDA_INSTALL_DIR ""   CACHE PATH "Install path of IDA"                      )
+set(IDA_PLUGIN_INSTALL_SUBDIR "" CACHE STRING "Install plugins into plugins/<subdir> instead of plugins")
 
 set(ida_libraries "")
 
@@ -185,7 +186,12 @@ function (add_ida_plugin plugin_name)
     target_link_libraries(${plugin_name} PUBLIC ${ida_libraries})
 
     # Define install rule
-    install(TARGETS ${plugin_name} DESTINATION plugins)
+    if (IDA_PLUGIN_INSTALL_SUBDIR)
+        set(ida_plugin_install_dest "plugins/${IDA_PLUGIN_INSTALL_SUBDIR}")
+    else ()
+        set(ida_plugin_install_dest "plugins")
+    endif ()
+    install(TARGETS ${plugin_name} DESTINATION ${ida_plugin_install_dest})
 
     # When generating for Visual Studio, 
     # generate user file for convenient debugging support.
